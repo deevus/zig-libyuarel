@@ -3,6 +3,8 @@ const c = @cImport({
     @cInclude("yuarel.h");
 });
 
+pub const QueryParam = c.yuarel_param;
+
 const len = std.mem.len;
 const span = std.mem.span;
 
@@ -46,13 +48,13 @@ pub fn parse(allocator: Allocator, url: []const u8) !Yuarel {
 
 pub const ParsedQuery = struct {
     allocator: ?Allocator = null,
-    items: []c.yuarel_param,
+    items: []QueryParam,
     _query: [:0]u8,
 
     pub fn empty() ParsedQuery {
         return .{
             ._query = undefined,
-            .items = &[_]c.yuarel_param{},
+            .items = &[_]QueryParam{},
         };
     }
 
@@ -83,7 +85,7 @@ pub fn parseQuery(self: Yuarel) !ParsedQuery {
         return ParsedQuery.empty();
     }
 
-    const params = try self.allocator.alloc(c.yuarel_param, delimiter_count);
+    const params = try self.allocator.alloc(QueryParam, delimiter_count);
 
     _ = c.yuarel_parse_query(query, '&', params.ptr, @intCast(delimiter_count));
 
